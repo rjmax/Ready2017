@@ -14,12 +14,6 @@
                 "description": "Password for the Virtual Machine."
             }
         },
-        "roleAssignmentId": {
-            "type": "string",
-            "metadata": {
-                "description": "Role Assignemnt ID for the VM identity"
-            }
-        },
         "ubuntuOSVersion": {
             "type": "string",
             "defaultValue": "16.04.0-LTS",
@@ -178,7 +172,7 @@
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]",
-                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleAssignmentId'))]"
+                "[concat('Microsoft.Authorization/roleAssignments/', variables('roleAssignmentId'))]"
             ],
             "properties": {
                 "publisher": "Microsoft.ManagedIdentity",
