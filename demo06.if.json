@@ -2,17 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "passwordOrSshKey": {
-            "type": "string",
-            "defaultValue": "sshKey",
-            "allowedValues": [
-                "sshKey",
-                "password"
-            ],
-            "metadata": {
-                "description": "User name for the Virtual Machine."
-            }
-        },
         "adminUsername": {
             "type": "string",
             "metadata": {
@@ -21,13 +10,6 @@
         },
         "adminPassword": {
             "type": "securestring",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Password for the Virtual Machine."
-            }
-        },
-        "adminSshKey": {
-            "type": "string",
             "defaultValue": "",
             "metadata": {
                 "description": "Password for the Virtual Machine."
@@ -51,6 +33,13 @@
             "metadata": {
                 "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
             }
+        },
+        "availabilitySet": {
+            "type": "string",
+            "allowedValues": [
+                "yes",
+                "no"
+            ]
         }
     },
     "variables": {
@@ -64,7 +53,7 @@
         "storageAccountType": "Standard_LRS",
         "publicIPAddressName": "myPublicIP",
         "publicIPAddressType": "Dynamic",
-        "vmName": "[concat('MyUbuntuVM',parameters('passwordOrSshKey'))]",
+        "vmName": "MyUbuntuVM",
         "vmSize": "Standard_A1",
         "virtualNetworkName": "MyVNET",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
@@ -72,9 +61,23 @@
         "vmStorageAccountContainerName": "vhds",
         "OSDiskName": "osdiskforlinuxsimple",
         "dataDisk1VhdName": "datadisk1",
-        "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]"
+        "availabilitySetName": "availabilitySet1",
+        "availabilitySet": {
+            "id": "[resourceId('Microsoft.Compute/availabilitySets',variables('availabilitySetName'))]"
+        }
     },
     "resources": [
+        {
+            "condition": "[equals(parameters('availabilitySet'),'yes')]",
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[variables('availabilitySetName')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "platformFaultDomainCount": 2,
+                "platformUpdateDomainCount": 2
+            }
+        },
         {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('storageAccountName')]",
@@ -146,16 +149,17 @@
             }
         },
         {
-            "condition": "[equals(parameters('passwordOrSshKey'),'password')]",
             "apiVersion": "2016-03-30",
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[concat(variables('vmName'),'password')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]",
+                "[resourceId('Microsoft.Compute/availabilitySets',variables('availabilitySetName'))]"
             ],
             "properties": {
+                "availabilitySet": "[if(equals(parameters('availabilitySet'),'yes'), variables('availabilitySet'), null)]",
                 "hardwareProfile": {
                     "vmSize": "[variables('vmSize')]"
                 },
@@ -163,77 +167,6 @@
                     "computerName": "[variables('vmName')]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
-                },
-                "storageProfile": {
-                    "imageReference": {
-                        "publisher": "[variables('imagePublisher')]",
-                        "offer": "[variables('imageOffer')]",
-                        "sku": "[parameters('ubuntuOSVersion')]",
-                        "version": "latest"
-                    },
-                    "osDisk": {
-                        "name": "osdisk",
-                        "vhd": {
-                            "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')), '2016-01-01').primaryEndpoints.blob, variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),'.vhd')]"
-                        },
-                        "caching": "ReadWrite",
-                        "createOption": "FromImage"
-                    },
-                    "dataDisks": [
-                        {
-                            "name": "datadisk1",
-                            "diskSizeGB": "100",
-                            "lun": 0,
-                            "vhd": {
-                                "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')), '2016-01-01').primaryEndpoints.blob, variables('vmStorageAccountContainerName'),'/',variables('dataDisk1VhdName'),'.vhd')]"
-                            },
-                            "createOption": "Empty"
-                        }
-                    ]
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
-                        }
-                    ]
-                },
-                "diagnosticsProfile": {
-                    "bootDiagnostics": {
-                        "enabled": "true",
-                        "storageUri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')), '2016-01-01').primaryEndpoints.blob)]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('passwordOrSshKey'),'sshKey')]",
-            "apiVersion": "2016-03-30",
-            "type": "Microsoft.Compute/virtualMachines",
-            "name": "[concat(variables('vmName'),'ssh')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
-            ],
-            "properties": {
-                "hardwareProfile": {
-                    "vmSize": "[variables('vmSize')]"
-                },
-                "osProfile": {
-                    "computerName": "[variables('vmName')]",
-                    "adminUsername": "[parameters('adminUsername')]",
-                    "linuxConfiguration": {
-                        "disablePasswordAuthentication": "true",
-                        "ssh": {
-                            "publicKeys": [
-                                {
-                                    "path": "[variables('sshKeyPath')]",
-                                    "keyData": "[parameters('adminSshKey')]"
-                                }
-                            ]
-                        }
-                    }
                 },
                 "storageProfile": {
                     "imageReference": {
