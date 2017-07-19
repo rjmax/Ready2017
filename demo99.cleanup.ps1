@@ -4,4 +4,6 @@ Remove-AzureRmResourceGroup -Name serialCopies -Force
 Remove-AzureRmResourceGroup -Name crossResourceGroupDeployment -Force
 Remove-AzureRmResourceGroup -Name conditionalResourcesSsh -Force
 Remove-AzureRmResourceGroup -Name conditionalResourcesPassword -Force
-Remove-AzureRmResourceGroup -Name azureMonitor -Force
+Remove-AzureRmResourceGroup -Name msiLinux -Force
+Remove-AzureRmResourceGroup -Name msiWindows -Force
+
