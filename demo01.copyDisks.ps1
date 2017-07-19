@@ -1,3 +1,3 @@
-﻿New-AzureRmResourceGroup -Name copyProperties -Location eastus2euap -Force
+﻿New-AzureRmResourceGroup -Name copyDisks -Location westus -Force
 
-New-AzureRmResourceGroupDeployment -ResourceGroupName copyProperties -TemplateUri https://raw.githubusercontent.com/rjmax/Build2017/master/Act1.TemplateEnhancements/Chapter02.PropertyCopies.json
+New-AzureRmResourceGroupDeployment -ResourceGroupName copyDisks -TemplateUri https://raw.githubusercontent.com/rjmax/Ready2017/master/demo01.copyDisks.json
