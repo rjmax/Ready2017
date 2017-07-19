@@ -1,2 +1,2 @@
-﻿New-AzureRmResourceGroup -Name serialCopies -Location eastus2euap -Force
-New-AzureRmResourceGroupDeployment -ResourceGroupName serialCopies -TemplateUri https://raw.githubusercontent.com/rjmax/Build2017/master/Act1.TemplateEnhancements/Chapter03.SerialCopies.json
+﻿New-AzureRmResourceGroup -Name serialCopies -Location westus -Force
+New-AzureRmResourceGroupDeployment -ResourceGroupName serialCopies -TemplateUri https://raw.githubusercontent.com/rjmax/Ready2017/master/demo03.SerialCopies.json
