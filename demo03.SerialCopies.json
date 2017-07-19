@@ -32,17 +32,6 @@
             "metadata": {
                 "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
             }
-        },
-        "deploymentType": {
-            "type": "string",
-            "defaultValue": "serial",
-            "allowedValues": [
-                "parallel",
-                "serial"
-            ],
-            "metadata": {
-                "description": "Describes whether to deploy in parallel or serially."
-            }
         }
     },
     "variables": {
@@ -56,7 +45,7 @@
             "copy": {
                 "name": "myCopySet",
                 "count": 4,
-                "mode": "[parameters('deploymentType')]",
+                "mode": "serial",
                 "batchSize": 2
             },
             "properties": {
