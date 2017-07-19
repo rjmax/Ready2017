@@ -43,7 +43,6 @@
         }
     },
     "variables": {
-        "null": null,
         "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'salinuxvm')]",
         "imagePublisher": "Canonical",
         "imageOffer": "UbuntuServer",
