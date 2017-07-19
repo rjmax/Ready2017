@@ -43,6 +43,7 @@
         }
     },
     "variables": {
+        "null": null,
         "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'salinuxvm')]",
         "imagePublisher": "Canonical",
         "imageOffer": "UbuntuServer",
@@ -159,7 +160,7 @@
                 "[resourceId('Microsoft.Compute/availabilitySets',variables('availabilitySetName'))]"
             ],
             "properties": {
-                "availabilitySet": "[if(equals(parameters('availabilitySet'),'yes'), variables('availabilitySet'), null)]",
+                "availabilitySet": "[if(equals(parameters('availabilitySet'),'yes'), variables('availabilitySet'), variables('null'))]",
                 "hardwareProfile": {
                     "vmSize": "[variables('vmSize')]"
                 },
