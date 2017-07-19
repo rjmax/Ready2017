@@ -160,7 +160,7 @@
                 "[resourceId('Microsoft.Compute/availabilitySets',variables('availabilitySetName'))]"
             ],
             "properties": {
-                "availabilitySet": "[if(equals(parameters('availabilitySet'),'yes'), variables('availabilitySet'), null )]",
+                "availabilitySet": "[if(equals(parameters('availabilitySet'),'yes'), variables('availabilitySet'), json('null'))]",
                 "hardwareProfile": {
                     "vmSize": "[variables('vmSize')]"
                 },
