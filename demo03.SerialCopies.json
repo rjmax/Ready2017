@@ -32,10 +32,21 @@
             "metadata": {
                 "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
             }
+        },
+        "deploymentType": {
+            "type": "string",
+            "defaultValue": "serial",
+            "allowedValues": [
+                "parallel",
+                "serial"
+            ],
+            "metadata": {
+                "description": "Describes whether to deploy in parallel or serially."
+            }
         }
     },
     "variables": {
-        "templatelink": "https://raw.githubusercontent.com/rjmax/Build2017/master/Act1.TemplateEnhancements/Chapter03.LinuxVM.json"
+        "templatelink": "https://raw.githubusercontent.com/rjmax/Ready2017/master/demo03.LinuxVM.json"
     },
     "resources": [
         {
@@ -45,7 +56,7 @@
             "copy": {
                 "name": "myCopySet",
                 "count": 4,
-                "mode": "serial",
+                "mode": "[parameters('deploymentType')]",
                 "batchSize": 2
             },
             "properties": {

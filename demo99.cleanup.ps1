@@ -1,5 +1,5 @@
-﻿Remove-AzureRmResourceGroup -Name templateEnhancements -Force
-Remove-AzureRmResourceGroup -Name copyProperties -Force
+﻿Remove-AzureRmResourceGroup -Name copyDisks -Force
+Remove-AzureRmResourceGroup -Name copySecurityRules -Force
 Remove-AzureRmResourceGroup -Name serialCopies -Force
 Remove-AzureRmResourceGroup -Name crossResourceGroupDeployment -Force
 Remove-AzureRmResourceGroup -Name conditionalResourcesSsh -Force
